@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8ee">
+  <meta name="description" content="A little 11:11 surprise for Jubli, made with care.">
+  <title>A Little World for Jubli — 11:11</title>
+  <style>
+    :root {
+      --cream: #fff8ee;
+      --paper: #fffdf8;
+      --purple: #7652a8;
+      --purple-light: #eee5fb;
+      --purple-deep: #4f3479;
+      --orange: #ef9145;
+      --orange-light: #ffead8;
+      --yellow: #f6cf66;
+      --ink: #453b4d;
+      --muted: #827889;
+      --line: rgba(92, 67, 111, .13);
+      --shadow: 0 18px 55px rgba(92, 67, 111, .10);
+      --radius: 28px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 12%, rgba(246, 207, 102, .17), transparent 25rem),
+        radial-gradient(circle at 92% 82%, rgba(118, 82, 168, .13), transparent 28rem),
+        var(--cream);
+      font-family: ui-rounded, "Trebuchet MS", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+
+    .page-wrap {
+      width: min(100% - 28px, 850px);
+      margin: 0 auto;
+      padding: 22px 0 34px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 4px 14px;
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .04em;
+    }
+    .brand { color: var(--purple-deep); font-weight: 800; letter-spacing: .08em; }
+    .date-pill {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.58);
+      white-space: nowrap;
+    }
+    .progress-area { margin: 0 4px 17px; }
+    .progress-track { height: 5px; overflow: hidden; background: rgba(118,82,168,.12); border-radius: 999px; }
+    .progress-fill { height: 100%; width: 12.5%; border-radius: inherit; background: linear-gradient(90deg, var(--purple), var(--orange)); transition: width .45s ease; }
+    .progress-label { display: flex; justify-content: space-between; margin-top: 7px; color: var(--muted); font-size: .75rem; }
+
+    .book {
+      position: relative;
+      overflow: hidden;
+      min-height: 650px;
+      padding: clamp(25px, 5vw, 54px);
+      border: 1px solid rgba(255,255,255,.9);
+      border-radius: 34px;
+      background: rgba(255,253,248,.88);
+      box-shadow: var(--shadow);
+    }
+    .book::before, .book::after {
+      position: absolute;
+      z-index: 0;
+      width: 210px;
+      height: 210px;
+      content: "";
+      border-radius: 50%;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+    .book::before { top: -125px; right: -90px; background: rgba(246,207,102,.19); }
+    .book::after { bottom: -150px; left: -100px; background: rgba(118,82,168,.11); }
+    .slide { position: relative; z-index: 1; animation: appear .38s ease both; }
+    .slide[hidden] { display: none; }
+    @keyframes appear { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      color: var(--purple);
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { width: 22px; height: 2px; content: ""; border-radius: 3px; background: var(--orange); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 {
+      margin-bottom: 15px;
+      color: var(--purple-deep);
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 600;
+      letter-spacing: -.035em;
+      line-height: 1.08;
+    }
+    h1 { max-width: 650px; font-size: clamp(2.7rem, 8vw, 5.35rem); }
+    h2 { font-size: clamp(2.05rem, 6vw, 3.5rem); }
+    h3 { margin-bottom: 8px; color: var(--purple-deep); font-size: 1.05rem; }
+    p { color: var(--muted); font-size: 1rem; line-height: 1.8; }
+    .lead { max-width: 590px; font-size: clamp(1.02rem, 2.4vw, 1.18rem); }
+    .accent { color: var(--orange); }
+    .tiny-note { color: #9a8fa0; font-size: .82rem; line-height: 1.6; }
+
+    .hero-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(180px, .75fr); align-items: center; gap: 20px; min-height: 500px; }
+    .hero-art { display: grid; place-items: center; min-height: 260px; position: relative; }
+    .hero-orbit { display: grid; place-items: center; width: min(100%, 260px); aspect-ratio: 1; border: 1px dashed rgba(118,82,168,.28); border-radius: 50%; background: radial-gradient(circle, #fff2dc 0 34%, #f4eafa 35% 69%, rgba(255,255,255,0) 70%); }
+    .hero-panda { width: 58%; filter: drop-shadow(0 12px 12px rgba(75,50,80,.12)); }
+    .floating-flower { position: absolute; color: var(--orange); font-size: 2.1rem; }
+    .flower-one { top: 8%; right: 8%; transform: rotate(12deg); }
+    .flower-two { bottom: 9%; left: 4%; color: var(--yellow); transform: rotate(-12deg); }
+    .sparkle { position: absolute; color: var(--orange); font-size: 1.1rem; }
+    .sparkle-one { top: 20%; left: 8%; }
+    .sparkle-two { right: 2%; bottom: 24%; color: var(--purple); }
+
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--purple);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(118,82,168,.18);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 11px 22px rgba(118,82,168,.22); }
+    .btn.secondary { border: 1px solid var(--line); background: white; color: var(--purple-deep); box-shadow: none; }
+    .btn.orange { background: var(--orange); color: #442b19; box-shadow: 0 8px 18px rgba(239,145,69,.18); }
+
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 26px; }
+    .soft-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.76);
+    }
+    .soft-card.purple { background: linear-gradient(145deg, #f4edfc, #fff); }
+    .soft-card.orange { background: linear-gradient(145deg, #fff0e3, #fff); }
+    .card-icon { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-bottom: 14px; border-radius: 15px; background: white; font-size: 1.45rem; }
+    .soft-card p { margin-bottom: 0; font-size: .93rem; }
+
+    .mascot-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+    .mascot-card { display: flex; flex-direction: column; align-items: center; padding: 22px 16px; border: 1px solid var(--line); border-radius: 24px; background: white; text-align: center; }
+    .mascot-art { width: 145px; max-width: 75%; height: auto; margin: 4px 0 16px; }
+    .mascot-card p { max-width: 240px; margin-bottom: 0; font-size: .9rem; }
+
+    .sky-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin: 26px 0 15px; }
+    .sky-photo { position: relative; min-height: 185px; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(160deg, #f9d59b, #f4c1a4 48%, #c8b4df); }
+    .sky-photo:nth-child(2) { background: linear-gradient(160deg, #d8c2ee, #f4b68c 57%, #ffd977); }
+    .sky-photo:nth-child(3) { background: linear-gradient(160deg, #9eb4d8, #f3c8a6 55%, #f6d981); }
+    .sky-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .25s ease; }
+    .sky-photo img.loaded { opacity: 1; }
+    .sky-placeholder { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; padding: 12px; color: rgba(75,52,89,.75); text-align: center; }
+    .sky-placeholder strong { font-family: Georgia, serif; font-size: 1.1rem; }
+    .sky-placeholder span { font-size: .72rem; }
+    .sky-photo img.loaded + .sky-placeholder { display: none; }
+    .photo-caption { margin: 9px 3px 0; color: var(--muted); font-size: .84rem; text-align: center; }
+
+    .letter-stack { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 25px; }
+    .letter-button { min-height: 150px; padding: 18px 13px; border: 1px solid var(--line); border-radius: 20px; background: #fff; color: var(--purple-deep); text-align: left; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+    .letter-button:hover, .letter-button[aria-expanded="true"] { transform: translateY(-3px); background: #fbf6ff; }
+    .letter-button .envelope { display: block; margin-bottom: 12px; font-size: 1.8rem; }
+    .letter-button strong { display: block; font-size: .9rem; line-height: 1.4; }
+    .letter-content { display: none; margin-top: 15px; padding: 21px; border-left: 3px solid var(--orange); border-radius: 0 18px 18px 0; background: #fff7ee; }
+    .letter-content.open { display: block; animation: appear .25s ease both; }
+    .letter-content p { margin-bottom: 0; color: #6f6172; }
+
+    .mood-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 24px 0 15px; }
+    .mood-button { min-height: 56px; padding: 12px 15px; border: 1px solid var(--line); border-radius: 16px; background: white; color: var(--purple-deep); font-weight: 750; text-align: left; cursor: pointer; }
+    .mood-button[aria-pressed="true"] { border-color: rgba(118,82,168,.45); background: var(--purple-light); }
+    .comfort-output { min-height: 125px; padding: 23px; border: 1px solid rgba(239,145,69,.25); border-radius: 22px; background: linear-gradient(130deg, #fff4e9, #f8f2ff); }
+    .comfort-output p { margin: 0; color: #66586d; font-family: Georgia, serif; font-size: 1.15rem; line-height: 1.65; }
+
+    .wish-paper { position: relative; max-width: 650px; margin: 25px auto 0; padding: clamp(22px, 5vw, 40px); border: 1px solid #f0e4d2; border-radius: 8px 24px 8px 24px; background: repeating-linear-gradient(to bottom, #fffdf8 0, #fffdf8 34px, #eee5d9 35px); box-shadow: 0 12px 30px rgba(92,67,111,.08); }
+    .wish-paper p { color: #6f6172; font-family: Georgia, serif; font-size: 1.02rem; line-height: 2.05; }
+    .signature { margin: 20px 0 0; color: var(--purple); font-family: Georgia, serif; font-size: 1.25rem; font-style: italic; }
+    .final-mark { display: inline-block; margin: 12px 0 18px; padding: 8px 14px; border-radius: 999px; background: var(--orange-light); color: #935322; font-weight: 800; font-size: .82rem; }
+
+    .nav-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 4px 0; }
+    .nav-row .btn { min-width: 112px; }
+    .dots { display: flex; align-items: center; justify-content: center; gap: 7px; flex: 1; }
+    .dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 99px; background: rgba(118,82,168,.23); cursor: pointer; transition: width .2s ease, background .2s ease; }
+    .dot[aria-current="step"] { width: 23px; background: var(--orange); }
+    .footer-note { margin: 16px 4px 0; color: #a095a5; font-size: .72rem; text-align: center; }
+
+    @media (max-width: 650px) {
+      .page-wrap { width: min(100% - 18px, 850px); padding-top: 12px; }
+      .book { min-height: 620px; padding: 26px 21px; border-radius: 26px; }
+      .hero-layout { grid-template-columns: 1fr; gap: 4px; min-height: 0; }
+      .hero-art { min-height: 210px; grid-row: 1; }
+      .hero-orbit { width: 190px; }
+      .hero-copy { grid-row: 2; }
+      .two-col { gap: 10px; }
+      .soft-card { padding: 17px; }
+      .mascot-row { gap: 10px; }
+      .mascot-card { padding: 17px 10px; }
+      .mascot-art { width: 118px; }
+      .sky-grid { gap: 8px; }
+      .sky-photo { min-height: 142px; border-radius: 15px; }
+      .letter-stack { grid-template-columns: 1fr; }
+      .letter-button { display: flex; align-items: center; gap: 13px; min-height: 75px; }
+      .letter-button .envelope { margin: 0; }
+      .mood-grid { grid-template-columns: 1fr; }
+      .nav-row { gap: 7px; }
+      .nav-row .btn { min-width: 94px; padding: 0 14px; }
+      .dots { gap: 5px; }
+    }
+    @media (max-width: 370px) {
+      .topbar { font-size: .72rem; }
+      .date-pill { padding: 7px 9px; }
+      .sky-photo { min-height: 120px; }
+      .dot { width: 6px; height: 6px; }
+      .dot[aria-current="step"] { width: 17px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="topbar">
+      <div class="brand">A LITTLE WORLD</div>
+      <div class="date-pill">11 · 11 · A LITTLE REMINDER</div>
+    </header>
+    <div class="progress-area" aria-label="Website progress">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label"><span id="slideCounter">01 / 08</span><span id="slideName">A little surprise</span></div>
+    </div>
+
+    <main class="book" aria-live="polite">
+      <!-- Slide 1 -->
+      <section class="slide" data-title="A little surprise">
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <div class="eyebrow">A small 11:11 surprise</div>
+            <h1>A little world for <span class="accent">Jubli.</span></h1>
+            <p class="lead">Some people make ordinary days feel a little brighter. This tiny corner of the internet is here to remind you that you're one of those people, Sweety.</p>
+            <div class="final-mark">Made with care, just for you ✿</div>
+            <div class="button-row"><button class="btn" data-go="1">Step inside <span aria-hidden="true">→</span></button></div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <span class="floating-flower flower-one">✿</span><span class="floating-flower flower-two">✿</span>
+            <span class="sparkle sparkle-one">✦</span><span class="sparkle sparkle-two">✧</span>
+            <div class="hero-orbit">
+              <svg class="hero-panda" viewBox="0 0 220 220" role="img" aria-label="Simple panda illustration">
+                <circle cx="57" cy="55" r="34" fill="#393342"/><circle cx="163" cy="55" r="34" fill="#393342"/>
+                <ellipse cx="110" cy="116" rx="83" ry="81" fill="#fffdf8" stroke="#e7dce9" stroke-width="4"/>
+                <ellipse cx="78" cy="105" rx="22" ry="30" transform="rotate(25 78 105)" fill="#393342"/>
+                <ellipse cx="142" cy="105" rx="22" ry="30" transform="rotate(-25 142 105)" fill="#393342"/>
+                <circle cx="83" cy="105" r="7" fill="#fff"/><circle cx="137" cy="105" r="7" fill="#fff"/>
+                <ellipse cx="110" cy="139" rx="12" ry="9" fill="#393342"/><path d="M110 148 Q100 160 91 151 M110 148 Q120 160 129 151" fill="none" stroke="#393342" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="53" cy="135" r="10" fill="#f5b2a6" opacity=".7"/><circle cx="167" cy="135" r="10" fill="#f5b2a6" opacity=".7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 2 -->
+      <section class="slide" data-title="Little things" hidden>
+        <div class="eyebrow">Chapter 02 · The little details</div>
+        <h2>The little <span class="accent">things.</span></h2>
+        <p class="lead">Sometimes it is the smallest details that make an ordinary day feel a little softer: a familiar colour, a warm patch of sunlight, or something that makes you smile without trying.</p>
+        <div class="two-col">
+          <article class="soft-card purple"><span class="card-icon">💜</span><h3>A quiet kind of calm</h3><p>Like a peaceful afternoon when the world feels a little less loud.</p></article>
+          <article class="soft-card orange"><span class="card-icon">🧡</span><h3>A little warmth</h3><p>The kind that feels like late sunlight slipping into an ordinary day.</p></article>
+          <article class="soft-card orange"><span class="card-icon">🌻</span><h3>Keep turning toward light</h3><p>A small reminder that brighter moments can find their way back, one day at a time.</p></article>
+          <article class="soft-card purple"><span class="card-icon">🐼</span><h3>Small things that make you smile</h3><p>Sometimes a tiny familiar face is enough to make a page feel a little happier.</p></article>
+        </div>
+      </section>
+
+      <!-- Slide 3 -->
+      <section class="slide" data-title="A tiny story" hidden>
+        <div class="eyebrow">Chapter 03 · A little story</div>
+        <h2>A little moment of <span class="accent">calm.</span></h2>
+        <p class="lead">One sunny afternoon, a curious panda found a quiet place to sit. A sleepy sloth was already there, taking life at its own gentle pace. Somehow, it felt like the perfect little scene.</p>
+        <div class="mascot-row">
+          <article class="mascot-card">
+            <svg class="mascot-art" viewBox="0 0 180 160" role="img" aria-label="Cute simple panda drawing">
+              <circle cx="48" cy="42" r="25" fill="#403a49"/><circle cx="132" cy="42" r="25" fill="#403a49"/><ellipse cx="90" cy="83" rx="68" ry="64" fill="#fff" stroke="#e9deed" stroke-width="3"/>
+              <ellipse cx="63" cy="79" rx="17" ry="23" transform="rotate(22 63 79)" fill="#403a49"/><ellipse cx="117" cy="79" rx="17" ry="23" transform="rotate(-22 117 79)" fill="#403a49"/>
+              <circle cx="68" cy="78" r="5" fill="#fff"/><circle cx="112" cy="78" r="5" fill="#fff"/><ellipse cx="90" cy="105" rx="9" ry="7" fill="#403a49"/><path d="M90 112 Q80 124 72 114 M90 112 Q100 124 108 114" fill="none" stroke="#403a49" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="42" cy="105" r="8" fill="#f3b4aa"/><circle cx="138" cy="105" r="8" fill="#f3b4aa"/>
+            </svg>
+            <h3>A sunny little hello</h3><p>A quiet companion for a page filled with soft colours and brighter moments.</p>
+          </article>
+          <article class="mascot-card">
+            <svg class="mascot-art" viewBox="0 0 180 160" role="img" aria-label="Cute simple sloth drawing">
+              <path d="M35 135 Q16 119 27 98 Q11 78 30 60 Q22 29 51 25 Q66 3 91 20 Q117 2 132 29 Q162 33 151 63 Q172 87 150 105 Q154 132 126 138Z" fill="#b9875e" stroke="#9c704f" stroke-width="3"/>
+              <ellipse cx="90" cy="84" rx="53" ry="49" fill="#f4dfc4"/>
+              <path d="M51 64 Q62 45 82 55 Q91 70 76 83 Q57 86 51 64Z M98 55 Q119 45 129 65 Q123 86 104 83 Q89 70 98 55Z" fill="#b9875e"/>
+              <circle cx="69" cy="68" r="5" fill="#493b35"/><circle cx="111" cy="68" r="5" fill="#493b35"/><ellipse cx="90" cy="88" rx="10" ry="7" fill="#493b35"/><path d="M90 96 Q82 105 75 98 M90 96 Q98 105 105 98" fill="none" stroke="#493b35" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="48" cy="100" r="7" fill="#e8a79b" opacity=".8"/><circle cx="132" cy="100" r="7" fill="#e8a79b" opacity=".8"/>
+            </svg>
+            <h3>No hurry at all</h3><p>A gentle reminder that there is no need to rush through every little moment.</p>
+          </article>
+        </div>
+        <p class="tiny-note" style="text-align:center;margin-top:17px;">A tiny story about sunshine, good company, and taking things gently.</p>
+      </section>
+
+      <!-- Slide 4 -->
+      <section class="slide" data-title="Pieces of the sky" hidden>
+        <div class="eyebrow">Chapter 04 · Collected skies</div>
+        <h2>Pieces of the <span class="accent">sky.</span></h2>
+        <p class="lead">I take pictures of the sky because some moments look too lovely to keep to myself. These spaces are waiting for a few of my favourites.</p>
+        <div class="sky-grid">
+          <div><div class="sky-photo"><img src="photos/sky-1.jpg" alt="A sky photograph"/><div class="sky-placeholder"><strong>one quiet sky</strong><span>add sky-1.jpg</span></div></div><div class="photo-caption">A little pause.</div></div>
+          <div><div class="sky-photo"><img src="photos/sky-2.jpg" alt="A sky photograph"/><div class="sky-placeholder"><strong>the golden hour</strong><span>add sky-2.jpg</span></div></div><div class="photo-caption">A little warmth.</div></div>
+          <div><div class="sky-photo"><img src="photos/sky-3.jpg" alt="A sky photograph"/><div class="sky-placeholder"><strong>somewhere above</strong><span>add sky-3.jpg</span></div></div><div class="photo-caption">A little wonder.</div></div>
+        </div>
+        <p class="tiny-note">The pastel panels are only placeholders. Replace them with your own sky photos when you're ready — the instructions are in the included guide.</p>
+      </section>
+
+      <!-- Slide 5 -->
+      <section class="slide" data-title="Letters for you" hidden>
+        <div class="eyebrow">Chapter 05 · Open when you like</div>
+        <h2>Little letters, <span class="accent">for you.</span></h2>
+        <p class="lead">Pick an envelope. There's no order and no right time to open them.</p>
+        <div class="letter-stack">
+          <button class="letter-button" aria-expanded="false" aria-controls="letter1" data-letter="letter1"><span class="envelope">✉️</span><strong>Open when you need a smile</strong></button>
+          <button class="letter-button" aria-expanded="false" aria-controls="letter2" data-letter="letter2"><span class="envelope">💌</span><strong>Open when you forget your worth</strong></button>
+          <button class="letter-button" aria-expanded="false" aria-controls="letter3" data-letter="letter3"><span class="envelope">🌻</span><strong>Open on an ordinary day</strong></button>
+        </div>
+        <div class="letter-content" id="letter1"><p>Hi, Sweety. Here's your reminder to unclench your shoulders, take a tiny break, and remember that not every day has to be perfect. I hope something unexpectedly nice makes you smile today.</p></div>
+        <div class="letter-content" id="letter2"><p>You are not difficult to appreciate. Your feelings, your ideas, your little habits, and the person you are all matter. You don't have to be useful, cheerful, or perfect to deserve kindness.</p></div>
+        <div class="letter-content" id="letter3"><p>This isn't a special occasion, and that's exactly the point. You deserve kind words on ordinary Tuesdays, quiet afternoons, and all the days in between too.</p></div>
+      </section>
+
+      <!-- Slide 6 -->
+      <section class="slide" data-title="Your comfort corner" hidden>
+        <div class="eyebrow">Chapter 06 · Take what you need</div>
+        <h2>Your comfort <span class="accent">corner.</span></h2>
+        <p class="lead">Choose whichever sounds closest to your mood. Here's a little reminder for that moment.</p>
+        <div class="mood-grid" role="group" aria-label="Choose a comfort note">
+          <button class="mood-button" data-mood="bad" aria-pressed="true">☁️ A difficult day</button>
+          <button class="mood-button" data-mood="overthink" aria-pressed="false">🌙 When your mind is busy</button>
+          <button class="mood-button" data-mood="angry" aria-pressed="false">🍊 When everything feels annoying</button>
+          <button class="mood-button" data-mood="sad" aria-pressed="false">🌻 When you feel low</button>
+        </div>
+        <div class="comfort-output" aria-live="polite"><p id="comfortText">You don't have to fix the whole day at once. Take it one small moment at a time. Rest is allowed, and tomorrow can be a fresh page.</p></div>
+        <p class="tiny-note" style="margin-top:13px;">A tiny reminder from this little corner: you don't have to pretend you're okay to be appreciated.</p>
+      </section>
+
+      <!-- Slide 7 -->
+      <section class="slide" data-title="Wishes I have for you" hidden>
+        <div class="eyebrow">Chapter 07 · A few wishes</div>
+        <h2>Wishes I have <span class="accent">for you.</span></h2>
+        <p class="lead">Not wishes for one day only. A few things I hope life brings your way, again and again.</p>
+        <div class="wish-paper">
+          <p>Dear Jubli,</p>
+          <p>I hope life gives you plenty of reasons to laugh until your cheeks hurt. I hope you find calm after stressful days, courage when things feel uncertain, and people who listen with patience and treat your feelings gently.</p>
+          <p>I hope your efforts turn into moments you're proud of. I hope you get to visit the places you've been curious about, collect beautiful memories, and never lose the little things that make you you.</p>
+          <p>And on the days when none of that feels close, I hope you remember that one difficult day does not define your whole story. You deserve good things, not just when everything is going well, but on ordinary days too.</p>
+          <p>Keep a little space for the things that make you smile, the small comforts you return to, and all the lovely things you have not discovered yet.</p>
+          <p>With lots of good wishes,<br><span class="signature">Jarif</span></p>
+        </div>
+      </section>
+
+      <!-- Slide 8 -->
+      <section class="slide" data-title="Until another 11:11" hidden>
+        <div class="hero-layout">
+          <div class="hero-copy">
+            <div class="eyebrow">Chapter 08 · One last thing</div>
+            <h2>Keep being <span class="accent">you.</span></h2>
+            <p class="lead">Jubli, I hope you keep finding little reasons to smile, even on the days that try to steal them. Thank you for being a person worth making a whole little website for.</p>
+            <p class="lead" style="color:var(--purple);font-family:Georgia,serif;">Happy 11:11, Sweety. You're appreciated — today and on all the ordinary days too.</p>
+            <div class="final-mark">A little reminder, whenever you need it 🌻</div>
+            <p class="signature">— Jarif</p>
+            <div class="button-row"><button class="btn orange" id="restartButton">Read it again ↺</button></div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <span class="floating-flower flower-one">✿</span><span class="floating-flower flower-two">✿</span>
+            <div class="hero-orbit">
+              <svg class="hero-panda" viewBox="0 0 220 220">
+                <circle cx="57" cy="55" r="34" fill="#393342"/><circle cx="163" cy="55" r="34" fill="#393342"/>
+                <ellipse cx="110" cy="116" rx="83" ry="81" fill="#fffdf8" stroke="#e7dce9" stroke-width="4"/>
+                <ellipse cx="78" cy="105" rx="22" ry="30" transform="rotate(25 78 105)" fill="#393342"/><ellipse cx="142" cy="105" rx="22" ry="30" transform="rotate(-25 142 105)" fill="#393342"/>
+                <circle cx="83" cy="105" r="7" fill="#fff"/><circle cx="137" cy="105" r="7" fill="#fff"/><ellipse cx="110" cy="139" rx="12" ry="9" fill="#393342"/>
+                <path d="M110 148 Q100 160 91 151 M110 148 Q120 160 129 151" fill="none" stroke="#393342" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="53" cy="135" r="10" fill="#f5b2a6" opacity=".7"/><circle cx="167" cy="135" r="10" fill="#f5b2a6" opacity=".7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="nav-row" aria-label="Slide navigation">
+      <button class="btn secondary" id="prevButton" disabled>← Back</button>
+      <div class="dots" id="slideDots" aria-label="Choose a slide"></div>
+      <button class="btn" id="nextButton">Next →</button>
+    </nav>
+    <p class="footer-note">A small page, made with care. No rush — explore at your own pace.</p>
+  </div>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const progressFill = document.getElementById('progressFill');
+      const slideCounter = document.getElementById('slideCounter');
+      const slideName = document.getElementById('slideName');
+      const prevButton = document.getElementById('prevButton');
+      const nextButton = document.getElementById('nextButton');
+      const dotsContainer = document.getElementById('slideDots');
+      let currentSlide = 0;
+
+      slides.forEach((slide, index) => {
+        const dot = document.createElement('button');
+        dot.className = 'dot';
+        dot.type = 'button';
+        dot.setAttribute('aria-label', `Go to slide ${index + 1}: ${slide.dataset.title}`);
+        dot.addEventListener('click', () => showSlide(index));
+        dotsContainer.appendChild(dot);
+      });
+
+      function showSlide(index) {
+        currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+        slides.forEach((slide, i) => {
+          slide.hidden = i !== currentSlide;
+          if (i === currentSlide) slide.scrollTop = 0;
+        });
+        const dots = Array.from(dotsContainer.children);
+        dots.forEach((dot, i) => {
+          if (i === currentSlide) dot.setAttribute('aria-current', 'step');
+          else dot.removeAttribute('aria-current');
+        });
+        progressFill.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        slideCounter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+        slideName.textContent = slides[currentSlide].dataset.title;
+        prevButton.disabled = currentSlide === 0;
+        nextButton.disabled = currentSlide === slides.length - 1;
+        nextButton.textContent = currentSlide === slides.length - 2 ? 'Last page →' : 'Next →';
+        document.querySelector('.book').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      prevButton.addEventListener('click', () => showSlide(currentSlide - 1));
+      nextButton.addEventListener('click', () => showSlide(currentSlide + 1));
+      document.querySelectorAll('[data-go]').forEach(button => {
+        button.addEventListener('click', () => showSlide(Number(button.dataset.go)));
+      });
+      document.getElementById('restartButton').addEventListener('click', () => showSlide(0));
+
+      // Open one letter at a time, so the page stays tidy on a phone.
+      document.querySelectorAll('[data-letter]').forEach(button => {
+        button.addEventListener('click', () => {
+          const target = document.getElementById(button.dataset.letter);
+          const shouldOpen = !target.classList.contains('open');
+          document.querySelectorAll('.letter-content').forEach(panel => panel.classList.remove('open'));
+          document.querySelectorAll('[data-letter]').forEach(item => item.setAttribute('aria-expanded', 'false'));
+          if (shouldOpen) {
+            target.classList.add('open');
+            button.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+
+      // Comfort notes: choose a mood to reveal a message.
+      const comfortMessages = {
+        bad: "You don't have to fix the whole day at once. Take it one small moment at a time. Rest is allowed, and tomorrow can be a fresh page.",
+        overthink: "You don't need to solve every thought tonight. Take a slow breath, give yourself a little room, and come back to things one step at a time. Not every question needs an answer right now.",
+        angry: "It's okay to be annoyed sometimes. Give yourself a moment before carrying the whole world on your shoulders. You can feel what you feel and still choose a softer next step.",
+        sad: "You don't have to turn a sad day into a happy one immediately. Be gentle with yourself. Small comforts count, and you matter even when you're not feeling like your brightest self."
+      };
+      const comfortText = document.getElementById('comfortText');
+      document.querySelectorAll('[data-mood]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-mood]').forEach(item => item.setAttribute('aria-pressed', 'false'));
+          button.setAttribute('aria-pressed', 'true');
+          comfortText.textContent = comfortMessages[button.dataset.mood];
+        });
+      });
+
+      // If a real photo is added to /photos, show it and hide its pastel placeholder.
+      document.querySelectorAll('.sky-photo img').forEach(img => {
+        img.addEventListener('load', () => img.classList.add('loaded'));
+        img.addEventListener('error', () => img.classList.remove('loaded'));
+        if (img.complete && img.naturalWidth > 0) img.classList.add('loaded');
+      });
+
+      // Keyboard navigation for desktop users.
+      document.addEventListener('keydown', event => {
+        if (event.key === 'ArrowRight' && currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+        if (event.key === 'ArrowLeft' && currentSlide > 0) showSlide(currentSlide - 1);
+      });
+
+      showSlide(0);
+    })();
+  </script>
+</body>
+</html>
